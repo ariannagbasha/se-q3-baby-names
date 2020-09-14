@@ -7,6 +7,7 @@
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
 
+__author__ = "ariannagbasha with collabs from Shanquel and Sondos"
 """
 Define the extract_names() function below and change main()
 to call it.
@@ -43,8 +44,25 @@ def extract_names(filename):
     the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
-    names = []
-    # +++your code here+++
+    names = list()
+    ordering = dict()
+
+    with open(filename, 'r') as f:
+        output = f.read()
+        pattern = re.search(r'Popularity\sin\s(\d\d\d\d)', output)
+        if pattern is None:
+            return None
+        year = pattern.group(1)
+        names.append(year)
+        name_tuple = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>',
+                                output)
+    for r, m, f in name_tuple:
+        if m not in ordering:
+            ordering[m] = r
+        if f not in ordering:
+            ordering[f] = r
+    for n in sorted(ordering):
+        names.append(f'{n} {ordering[n]}')
     return names
 
 
@@ -83,6 +101,12 @@ def main(args):
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
 
     # +++your code here+++
+    for file in file_list:
+        if create_summary:
+            with open(file + '.summary', 'w') as f:
+                f.write('\n'.join(extract_names(file)))
+        else:
+            print('\n'.join(extract_names(file)))
 
 
 if __name__ == '__main__':
